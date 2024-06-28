@@ -1,5 +1,5 @@
 
-##Question 1##
+
 install.packages("GSODR")
 install.packages("MODIStsp")
 
@@ -68,7 +68,7 @@ tm_basemap("Esri.WorldTopoMap") +
 
 
 
-## Question 4##
+
 
 date_start <- "2019.02.01"
 date_end <- "2019.04.30"
@@ -97,7 +97,7 @@ MODIStsp(
 
 
 
-##5)	Load the separate RData files for TERRA and for AQUA (requires the raster##
+##Load the separate RData files for TERRA and for AQUA (requires the raster##
 ##package, but you should immediately convert to a stars object using the st_as_stars() function).##
 
 
@@ -112,7 +112,7 @@ load("G:/CSPH/R Geocomputation/LabExercise 7/Surf_Temp_Daily_1Km_v6/Time_Series/
 aquastars <- st_as_stars(raster_ts)
 
 
-##6)	For each satellite, use ## 
+##	For each satellite, use ## 
 
 ##… %>% st_apply(c("x","y"), function(q) median(q,na.rm=TRUE))## 
 
