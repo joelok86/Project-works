@@ -68,7 +68,7 @@ st_crs(lab4utm)
 library("tidycensus")
 
 
-key <- "cae655db94de4eb8814a2f5267333dc600a98dc8"
+ <- " "
 
 variable_list <- load_variables(2019, "acs5", cache = TRUE)
 
@@ -97,7 +97,7 @@ acsrace2 <- get_acs(geography = "tract",
 
 acsrace3 <- acsrace2 %>% 
   dplyr::select(-moe) %>%
-  spread(key=variable,value=estimate) %>%
+  spread(=variable,value=estimate) %>%
   mutate(
          `ProportionAfrican-American` = B01001B_001/B01001_001,
          `Proportion\nBelow Poverty\nLevel` = (B17026_002+B17026_003+B17026_004)/B17026_001) %>%
