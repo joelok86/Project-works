@@ -13,7 +13,7 @@ library("tidymodels")
 library("readxl") 
 library("vip")
 
-load("G:\\CSPH\\R Geocomputation\\LabExercise8\\Ensemble_preds_no_CMAQ_arizona (1).RData")
+load(" .RData")
  lab8 <- DF
  View(lab8)
  
@@ -53,7 +53,7 @@ View(slopes_df)
 ##state of Arizona. Use the same set of variables that I used in this week’s recorded demonstration.##
  
 
-key <- "cae655db94de4eb8814a2f5267333dc600a98dc8"
+key <- " "
 
 
 library(tidycensus)
@@ -169,7 +169,7 @@ randfor_model <- rand_forest(trees = 1000) %>%
   set_mode("regression")
 
 ####################################################################
-### Step 8b: Define a workflow object that links to the model    ###
+### Step 8b: Defining a workflow object that links to the model    ###
 ###  object and the data set recipe.                             ###  
 ####################################################################
 
