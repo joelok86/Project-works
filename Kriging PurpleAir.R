@@ -336,7 +336,7 @@ for (i in seq_along(dates)) {
 
 
 
-key <- "cae655db94de4eb8814a2f5267333dc600a98dc8"
+key <- " "
 
 variable_list <- load_variables(2019, "acs5", cache = TRUE)
 
