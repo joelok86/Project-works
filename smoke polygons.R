@@ -77,8 +77,8 @@ save(x=smokepolys,file="US_HMSSmokePolygons_2020.RData")
 ##RAQSAPI PM25 DATA - MOntana, Idaho , Wyoming##
 
 library(RAQSAPI)
-aqs_credentials(username="james.crooks@cuanschutz.edu",
-                key="carmelfox91")
+aqs_credentials(username=" ",
+                key=" ")
 
 
 library("lubridate")
