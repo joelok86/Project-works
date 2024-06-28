@@ -1,5 +1,5 @@
 ## Loading the data##
-load("G:/CSPH/R Geocomputation/Lab exercise 2/PollenData_Utah2020.RData")
+load(" ")
 pollendata <- PollenMonitors
 library(tidycensus)
 library(ggplot2)
@@ -116,9 +116,9 @@ pollendata3 <- pollendata3 %>% mutate(month = month(StartingAt))
  
  install.packages("RAQSAPI")
  library(RAQSAPI)
- aqs_sign_up("jyothi.lokanadham/@cuanschutz.edu")
- aqs_credentials(username="james.crooks@cuanschutz.edu",
-                 key="carmelfox91")
+ aqs_sign_up(" ")
+ aqs_credentials(username=" ",
+                 key=" ")
  
 
 
