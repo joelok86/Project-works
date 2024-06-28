@@ -14,12 +14,12 @@ library(USAboundaries)
 ###1)	Download the projections for the “IP” model at 2.5 arc-second resolution for the period##
 ##2061-2080 under RCP4.5 and RCP8.5.##
 
-setwd("G:\\CSPH\\R Geocomputation\\climatedata")
+setwd(" ")
 
 raster::getData(name = 'worldclim', 
                 var = 'bio', 
                 res = 2.5,
-                path = "G:\\CSPH\\R Geocomputation\\climatedata")
+                path = " ")
 
 raster::getData(name = 'CMIP5', 
                 var = 'bio', #grabs 19 most popular climate variables 
@@ -27,7 +27,7 @@ raster::getData(name = 'CMIP5',
                 rcp = 45, #RCP4.5.  
                 model = "IP", # one particular climate model called IPSL-CM5A-MR
                 year = 70, # years 2061-2080
-                path = "G:\\CSPH\\R Geocomputation\\climatedata")
+                path = " ")
 
 
 raster::getData(name = 'CMIP5', 
@@ -36,7 +36,7 @@ raster::getData(name = 'CMIP5',
                 rcp = 85,  #RCP8.5.  
                 model = "IP", # one particular climate model called IPSL-CM5A-MR
                 year = 70, # years 2061-2080
-                path = "G:\\CSPH\\R Geocomputation\\climatedata")
+                path = " ")
 ##2)Load the raster for the average temperature variable (“bio1”) for both of these projections,##
 ##and convert to tenths of a degree.##
 
@@ -229,7 +229,7 @@ tm_basemap("Esri.WorldTopoMap") +
 
 
 
-data_path <- "G:\\CSPH\\R Geocomputation\\climatedata"
+data_path <- " "
  
 
 
@@ -274,7 +274,7 @@ data_path <- "G:\\CSPH\\R Geocomputation\\climatedata"
    
   
 ##load raster projections and crop for denver county for all the models using for loop ## 
-   setwd("G:\\CSPH\\R Geocomputation\\climatedata")    
+   setwd(" ")    
    
    annualb1den <- stars::read_stars("wc2-5\\bio1.bil")
    annualb1den <- annualb1den/10
