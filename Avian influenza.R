@@ -82,7 +82,7 @@ MODIStsp(
   selprod = "Surf_Temp_Daily_1Km (M*D11A1)",
   bandsel = "LST_Day_1km",
   user = "mstp_test" ,
-  password = "MSTP_test_01",
+  password = "",
   start_date = date_start,
   end_date = date_end,
   verbose = TRUE,
@@ -243,7 +243,7 @@ data_list <- lapply(dates, function(date) {
        limit=1000,
        startdate = date,
        enddate = date,
-       token = "ACGmUHmtYUgcggyABCAuqThhnCHERuqj")
+       token = " ")
 })
 
 
