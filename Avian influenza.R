@@ -5,8 +5,8 @@ install.packages("MODIStsp")
 
 library(sf)
 library(dplyr)
-setwd("G:\\CSPH\\R Geocomputation\\LabExercise 7")
-lab7data <- st_read("G:\\CSPH\\R Geocomputation\\LabExercise 7\\hydrography")
+setwd(" ")
+lab7data <- st_read(" ")
 glimpse(lab7data)
 
 library("MODIStsp")
@@ -78,7 +78,7 @@ date_end <- "2019.04.30"
 
 MODIStsp(
   gui = FALSE,
-  out_folder = "G:\\CSPH\\R Geocomputation\\LabExercise 7",
+  out_folder = " ",
   selprod = "Surf_Temp_Daily_1Km (M*D11A1)",
   bandsel = "LST_Day_1km",
   user = "mstp_test" ,
@@ -101,13 +101,13 @@ MODIStsp(
 ##package, but you should immediately convert to a stars object using the st_as_stars() function).##
 
 
-load("G:/CSPH/R Geocomputation/LabExercise 7/Surf_Temp_Daily_1Km_v6/Time_Series/RData/Terra/LST_Day_1km/MOD11A1_LST_Day_1km_32_2019_120_2019_RData.RData")
+load(".RData")
 
 terrastars <- st_as_stars(raster_ts)
 
 
 
-load("G:/CSPH/R Geocomputation/LabExercise 7/Surf_Temp_Daily_1Km_v6/Time_Series/RData/Aqua/LST_Day_1km/MYD11A1_LST_Day_1km_32_2019_120_2019_RData.RData")
+load(".RData")
 
 aquastars <- st_as_stars(raster_ts)
 
@@ -289,7 +289,7 @@ for (i in 1:length(stationid)) {
                                     startdate = as.character(date), 
                                     enddate = as.character(date), 
                                     limit=1000,
-                                    token =  "ACGmUHmtYUgcggyABCAuqThhnCHERuqj")
+                                    token =  " ")
   
   # Store the metadata for this station in the list
   metadata_list[[i]] <- station_metadata
