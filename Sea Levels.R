@@ -89,7 +89,7 @@ summary(raster_object)
 plot(raster_object)
 
 
-#5)	Calculate the average elevation within each tract using the extract() function
+#Calculating the average elevation within each tract using the extract() function
 #in the raster package (running this function may time several minutes).  
 #The extract() function is like the summarize() function in tidyverse, but is optimized 
 
@@ -247,7 +247,7 @@ write.csv(model8conf, file = "model8_conf.csv", row.names = FALSE)
 #Please quantify the increases.
 
 summary(mergeddatalab1)
-model9_summary <- "G:\\CSPH\\R Geocomputation\\model9_summary.csv"
+model9_summary <- " "
 write.csv(model9_summary, file = "model9_summary.csv", row.names = FALSE)
 
 #c.	Did the proportion of residents in the selected sociodemographic groups increase
