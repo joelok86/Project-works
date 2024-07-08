@@ -1,0 +1,650 @@
+library(readr)    # For reading text files
+library(data.table)
+
+
+setwd("")
+
+##BMI secondary SNPs##
+
+text_data <- read.delim(" ", header = TRUE, sep = " ", quote = "", fill = TRUE, stringsAsFactors = FALSE)
+
+xxx <- read.delim(" ", header = TRUE, strip.white = TRUE)
+write.csv(l, file = "locke.csv", row.names = TRUE)
+filtered_data_bmi <- subset(locke_data, P < xxx)
+write.csv(filtered_data_bmi, file = ".csv", row.names = TRUE)
+
+
+
+
+data_sec <- data.frame(text_data)
+locke <- ".csv"
+sec <- ".csv"
+write.csv(data_BMIsec, file = xxx, row.names = TRUE)
+
+
+
+##BMI Index SNPs##
+text_data <- read.delim(".txt", header = TRUE, sep = " ", quote = "", fill = TRUE, stringsAsFactors = FALSE)
+
+data <- data.frame(text_data)
+BMI_index <- ".csv"
+write.csv(data, file = BMI_index, row.names = TRUE)
+
+
+##WHR adj BMI index SNPs ##
+text_data <- read.delim(".txt", header = TRUE, sep = " ", quote = "", fill = TRUE, stringsAsFactors = FALSE)
+
+data <- data.frame(text_data)
+index <- ".csv"
+write.csv(data, file = index, row.names = TRUE)
+
+
+
+##WHR adj BMI sec SNPs##
+text_data <- read.delim(".txt", header = TRUE, sep = " ", quote = "", fill = TRUE, stringsAsFactors = FALSE)
+
+data <- data.frame(text_data)
+BMI_sec <- ".csv"
+write.csv(data, file = BMI_sec, row.names = TRUE)
+
+
+#WHR Index SNPs##
+text_data <- read.delim(".txt", header = TRUE, sep = " ", quote = "", fill = TRUE, stringsAsFactors = FALSE)
+
+data <- data.frame(text_data)
+whr_index <- ".csv"
+write.csv(data, file = whr_index, row.names = TRUE)
+
+
+##WHR sec SNPs##
+text_data <- read.delim(".txt", header = TRUE, sep = " ", quote = "", fill = TRUE, stringsAsFactors = FALSE)
+
+data <- data.frame(text_data)
+whr_sec <- ".csv"
+write.csv(data, file = whr_sec, row.names = TRUE)
+
+## rcode for OA SNPs ##
+
+library(readr)    # For reading text files
+library(data.table)
+
+
+setwd("xxxx")
+
+split_file <- function(input_file, output_file1, output_file2) {
+  lines <- readLines(input_file)
+  total_lines <- length(lines)
+  half_lines <- total_lines %/% 2
+  
+  column_names <- lines[1]  # Extract column names from the first row
+  
+  writeLines(c(column_names, lines[2:half_lines]), con = output_file1)
+  writeLines(c(column_names, lines[(half_lines+1):total_lines]), con = output_file2)
+}
+
+# Usage:
+split_file(".txt", "small_file1.txt", "small_file2.txt")
+
+
+text_data <- read.delim(".txt", header = TRUE, sep = " ", quote = "", fill = TRUE, stringsAsFactors = FALSE)
+
+##strip.white removes the variable spaces before and after a variable ##
+
+
+ data <- read.delim("hip_oa_snp.txt", header = TRUE, strip.white = TRUE)
+
+   colnames(data) <- c("SNPID", "EffectAllele", "AlternateAllele", "EffectAlleleFrequency", "EffectSize.Beta", "Pvalue", "SampleSize", "Chromosome", "Position", "EffectSize.OR")
+ 
+   # Convert relevant columns to appropriate data types if necessary
+   data$SNPID <- as.character(data$SNPID)
+ data$EA <- as.character(data$EffectAllele)
+ data$AA <- as.character(data$AlternateAllele)
+ data$EAFres <- as.character(data$EffectAlleleFrequency)
+ data$ESBeta <- as.character(data$EffectSize.Beta)
+ data$Pval <- as.numeric(data$Pvalue)
+ data$SaSize <- as.character(data$SampleSize)
+ data$Chr <- as.character(data$Chromosome)
+ data$Posit <- as.character(data$Position)
+ data$EtSiOR <- as.character(data$EffectSize.OR)
+ 
+ # Display the resulting data
+   print(data)
+
+
+   write.csv(data, file = ".csv", row.names = TRUE)
+   
+   filtered_data <- subset(data, Pval < xxxx) 
+   
+   
+   write.csv(filtered_data, file = ".csv", row.names = TRUE)
+   
+   filtered_data1 <- subset(data, Pval < xxxx)
+   
+   data1 <- read.delim("file2.txt", skip = 1, header = FALSE, strip.white = TRUE)
+   
+   colnames(data1) <- c("SNPID", "EA", "AA", "EAFres", "ESBeta", "Pval", "SaSize", "Chr", "Posit", "EtSiOR")
+   
+   # Convert relevant columns to appropriate data types if necessary
+   data1$SNPID <- as.character(data1$SNPID)
+   data1$EA <- as.character(data1$EA)
+   data1$AA <- as.character(data1$AA)
+   data1$EAFres <- as.character(data1$EAFreq)
+   data1$ESBeta <- as.character(data1$ESBeta)
+   data1$Pval <- as.numeric(data1$Pval)
+   data1$SaSize <- as.character(data1$SamS)
+   data1$Chr <- as.character(data1$Chr)
+   data1$Posit <- as.character(data1$Pos)
+   data1$ESizeOR <- as.character(data1$ESizeOR)
+   
+   # Display the resulting data
+   print(data1)
+   
+   
+   write.csv(data, file = ".csv", row.names = TRUE)
+   
+   
+   
+   ##fat_free_mass data ##
+   
+   
+   library(readr)    # For reading text files
+   library(data.table)
+   
+   
+   setwd("xxxx ")
+   
+   
+   
+   data2 <- read.delim(".txt", header = TRUE, strip.white = TRUE)
+   
+   data2$Pvalue <- as.numeric(data2$Pvalue)
+   write.csv(data2, .csv", row.names = TRUE)
+   
+   filtered_data2 <- subset(data2, Pvalue < xx)  
+   
+   filtered_data2 <- subset(data2, Pvalue < xx )
+   
+   filtered_data2 <- subset(data2, Pvalue < xx)
+   
+   filtered_data2 <- subset(data2, Pvalue < xx )
+   
+   
+   ##crp_snps data ##
+   
+   setwd("xx")  
+   
+   crp_data <- ".tsv"
+  
+   crp_data1 <- read.table(xx, header = TRUE , strip.white = TRUE)
+   
+   crp_data1 <- read.delim(xx, header = TRUE, sep = "\\s{2,}", strip.white = TRUE)
+   
+   
+   
+   crp_data1 <- read.table(xx, skip = 1, header = FALSE , strip.white = TRUE) 
+   
+   crp_data1 <- read.table(xx, fill = TRUE, header = FALSE, strip.white = TRUE)
+   
+ 
+   
+##IL6 data ##
+   
+   setwd("xxxx")    
+   
+ il6_r_data <- read.csv(".csv", header = TRUE)  
+   
+ il6r_data <- subset(xx, select = -X)
+ 
+ il6r_data$P <- as.numeric(xx$P)
+ 
+ il6r_data$logPvalue <- -log10(xx$Pval)
+   
+ ##BiocManager-installation - snpstats ##
+ 
+ 
+ install.packages("BiocManager", repos = "https://cloud.r-project.org")
+ 
+ avail <- BiocManager::available()
+ 
+ length(avail) 
+ BiocManager::available("BSgenome.Hsapiens") # BSgenome.Hsapiens.* packages
+ 
+ install.packages("LDheatmap")
+ library(LDheatmap)
+
+ if (!require("BiocManager", quietly = TRUE))
+   install.packages("BiocManager")
+ 
+ BiocManager::install("snpStats")
+ library("snpStats")
+ 
+ 
+ ##trying LD -- BMI snps ##
+ 
+ setwd("xx")
+ 
+ bmi_ld <- read.csv("xx.csv", header = TRUE)
+ 
+##using LDLinkR##
+ 
+ library(LDlinkR)
+ 
+##This code below, gives us the r-squared matrix ##
+ 
+ LDmatrix(snps = c("xx", "xx", "xx"), 
+          pop = "xx", 
+          r2d = "xxxxx", 
+          token = "xx",
+          genome_build = "xx"
+ )
+
+ 
+ ##filtering bmi_snps to chr1 and sorting by position## 
+ 
+xx <- read.csv("xx.csv", header = TRUE) 
+ 
+ subset_chr_1 <- xx[xxx$CHR == 1, ] 
+ 
+ xx <- subset_chr_1[order(xx$POS), ]
+ 
+ xx <- data.frame(SNP = xx$SNP)
+ 
+ 
+## LDlinkR package has a limit of 3000 RS numbers for LDmatrix ##
+ 
+ LDmatrix(snps = xx$SNP, 
+          pop = "xx", 
+          r2d = "xx", 
+          token = "xx",
+          genome_build = "xx"
+ ) 
+ 
+ subset_1 <- sorted_subset_chr_1[1:507, ]
+ subset_2 <- sorted_subset_chr_1[508:1002, ]
+ subset_3 <- sorted_subset_chr_1[1003:1524, ]
+ subset_4 <- sorted_subset_chr_1[1525:2002, ]
+ subset_5 <- sorted_subset_chr_1[2003:2530, ]
+ subset_6 <- sorted_subset_chr_1[2531:3014, ]
+ subset_7 <- sorted_subset_chr_1[3015:nrow(sorted_subset_chr_1), ]
+ 
+ # Create an empty list to store the LD matrices
+ ld_matrices <- list()
+ 
+ # Calculate LD matrix for subset 1
+ ld_matrix_1 <- LDmatrix(snps = xx$SNP,
+                         pop = "xx",
+                         r2d = "xx",
+                         token = "xx",
+                         genome_build = "xx")
+ ld_matrices[["xx"]] <- xx
+ 
+ # Calculate LD matrix for subset 2
+ ld_matrix_1 <- LDmatrix(snps = xx$SNP,
+                         pop = "xx",
+                         r2d = "xx",
+                         token = "xx",
+                         genome_build = "xx")
+ ld_matrices[["xx"]] <- xx
+ 
+ # Calculate LD matrix for subset 3
+ ld_matrix_1 <- LDmatrix(snps = xx$SNP,
+                         pop = "xx",
+                         r2d = "xx",
+                         token = "xx",
+                         genome_build = "xx")
+ ld_matrices[["xx"]] <- xx
+ 
+  # Calculate LD matrix for subset 4
+ ld_matrix_1 <- LDmatrix(snps = xx$SNP,
+                         pop = "xx",
+                         r2d = "xx",
+                         token = "xx",
+                         genome_build = "xx")
+ ld_matrices[["xx"]] <- xx
+
+ # Calculate LD matrix for subset 5
+ ld_matrix_1 <- LDmatrix(snps = xx$SNP,
+                         pop = "xx",
+                         r2d = "xx",
+                         token = "xx",
+                         genome_build = "xx")
+ ld_matrices[["xx"]] <- xx
+
+ # Calculate LD matrix for subset 6
+ ld_matrix_1 <- LDmatrix(snps = xx$SNP,
+                         pop = "xx",
+                         r2d = "xx",
+                         token = "xx",
+                         genome_build = "xx")
+ ld_matrices[["xx"]] <- xx
+ 
+# Calculate the total number of rows across all matrices
+total_rows <- sum(sapply(ld_matrices, nrow))
+
+ # Print the total number of rows
+ cat("Total number of rows across all matrices:", total_rows, "\n") 
+ 
+ 
+ 
+##For solving all matrices at one go ##
+ 
+ # Creating an empty list to store the data frames
+ snp_df_list <- list()
+ 
+ # Looping through the list of matrices
+ for (i in 1:length(ld_matrices)) {
+   # Get the current matrix
+   matrix <- ld_matrices[[i]]
+   
+   # Getting the row SNP names
+   row_snp <- rownames(matrix)
+   
+   # Creating an empty dataframe
+   snp_df <- data.frame(RS_number = character(), col_snp = character(), intersecting_value = numeric(), stringsAsFactors = FALSE)
+   
+   # Looping through the rows of the matrix
+   for (j in 1:nrow(matrix)) {
+     # Getting the RS_number value for the row
+     rs_number <- matrix[j, "RS_number"]
+     
+     # Looping through the columns of the matrix (excluding RS_number column)
+     for (k in 2:ncol(matrix)) {
+       # Getting the column SNP name
+       current_col_snp <- colnames(matrix)[k]
+       
+       # Getting the intersecting value
+       intersecting_value <- matrix[j, k]
+       
+       # Adding the SNP pair and intersecting value to the dataframe
+       snp_df <- rbind(snp_df, data.frame(RS_number = rs_number, col_snp = current_col_snp, intersecting_value = intersecting_value, stringsAsFactors = FALSE))
+     }
+   }
+   
+   # Removing the first row (header row)
+   snp_df <- snp_df[-1, ]
+   
+   # Adding the dataframe to the list
+   snp_df_list[[i]] <- snp_df
+ } 
+ 
+ # Get the first element from the list
+ first_matrix <- ld_matrices[[1]]
+ 
+ # Creating an empty dataframe
+ snp_df <- data.frame(RS_number = character(), col_snp = character(), intersecting_value = numeric(), stringsAsFactors = FALSE)
+ 
+ # Looping through the rows of the matrix
+ for (j in 1:nrow(first_matrix)) {
+   # Getting the RS_number value for the row
+   rs_number <- first_matrix[j, "RS_number"]
+   
+   # Looping through the columns of the matrix (excluding RS_number column)
+   for (k in 2:ncol(first_matrix)) {
+     # Getting the column SNP name
+     current_col_snp <- colnames(first_matrix)[k]
+     
+     # Getting the intersecting value
+     intersecting_value <- first_matrix[j, k]
+     
+     # Adding the SNP pair and intersecting value to the dataframe
+     snp_df <- rbind(snp_df, data.frame(RS_number = rs_number, col_snp = current_col_snp, intersecting_value = intersecting_value, stringsAsFactors = FALSE))
+   }
+ }
+ 
+ # Removing the first row (header row)
+ snp_df <- snp_df[-1, ]
+ 
+ 
+ 
+ 
+ # Splitting the dataframe based on intersecting_value
+ snp_df_less_than_001 <- snp_df[snp_df$intersecting_value < xx, ]
+ snp_df_greater_than_equal <- snp_df[snp_df$intersecting_value >= xx, ]
+ 
+ 
+ 
+ ##removing the third column and joining all the snps of less than xx r2##
+ joined_data1 <- snp_df_less_than[, c("RS_number", "col_snp")]
+ 
+ joined_column <- c(joined_data1$RS_number, joined_data1$col_snp)
+ 
+ ##getting just the unique snps##
+ unique_joined_column <- unique(joined_column)
+ 
+ 
+ # Compare unique_joined_column with data2 and remove matching SNPs
+ filtered_joined_column <- unique_joined_column[!(unique_joined_column %in% snp_df_greater_than_equal$RS_number | unique_joined_column %in% snp_df_greater_than_equal$col_snp)]
+ 
+ 
+ ## this gave an empty dataset. This means that all the snps in the dataset less than r2 0.01 are there in the dataset with greater than 0.01 r2 ##
+ 
+ 
+ match_indices <- match(snp_df_greater_than_equal_001$RS_number, subset_1$SNP)
+ pvalues <- subset_1$P[match_indices]
+ pvalues[is.na(pvalues)] <- 0
+ 
+ snp_df_greater_than_equal_001$RS_number_pvalue <- pvalues
+ 
+ 
+match_indices <- match(snp_df_greater_than_equal$col_snp, subset_1$SNP)
+ pvalues <- subset_1$P[match_indices]
+ pvalues[is.na(pvalues)] <- 0
+
+ snp_df_greater_than_equal$col_snp_pvalue <- pvalues
+ 
+ 
+ ##This code removes the snps for each row, with pvalue less than the other snp in the row ##
+ new_dataset_1 <- data.frame(
+   snp = ifelse(snp_df_greater_than_equal$RS_number_pvalue < snp_df_greater_than_equal$col_snp_pvalue, snp_df_greater_than_equal$RS_number, snp_df_greater_than_equal$col_snp),
+   pvalue = ifelse(snp_df_greater_than_equal$RS_number_pvalue < snp_df_greater_than_equal$col_snp_pvalue, snp_df_greater_than_equal$RS_number_pvalue, snp_df_greater_than_equal$col_snp_pvalue)
+ )
+ 
+ 
+ ## Unique snps ##
+ 
+ new_dataset_1 <- unique(new_dataset_1)
+ 
+ 
+ save.image(".RData")
+  
+ load(".RData")
+ library(bigstatsr)
+ library(bigreadr)
+ 
+ ## LONG CSV
+
+ csv1 <- fwrite2(bmi_snp, 
+                tempfile(fileext = ".csv"), 
+                row.names = TRUE)
+ format(file.size(csv1), big.mark = ",")
+ 
+ nlines(csv1) #gives the number of rows#
+ 
+ (first_rows1 <- fread2(csv1, nrows = 5))
+
+ 
+ sapply(first_rows1, typeof)
+ ncol(first_rows1)
+ (test1 <- big_read(csv1, select = c(1:4, 8:12)))
+   
+ rbind(csv1, test1$backingfile)
+
+ 
+ attr(test1, "fbm_names") 
+
+ 
+ meta1 <- fread2(csv1, select = 5:7)
+ head(meta1)
+
+ bigsnpr::csv
+ 
+ snp_clumping(
+   test1,
+   infos.chr,
+   ind.row = rows_along(G),
+   S = NULL,
+   thr.r2 = 0.2,
+   size = xxx,
+   infos.pos = NULL,
+   is.size.in.bp = NULL,
+   exclude = NULL,
+   ncores = 1
+ )
+ 
+ library("bigsnpr")
+ 
+ ind.keep <- snp_clumping(test1, infos.chr = test1$CHR,
+                          infos.pos = test1$POS,
+                          thr.r2 = 0.01)
+
+ 
+ 
+ ld_clump(
+   dat = bmi_snp,
+   clump_kb = xxx,
+   clump_r2 = xx,
+   clump_p = xxx,
+   pop = "xxx",
+   access_token = "xxx",
+   bfile = NULL,
+   plink_bin = NULL
+ )  
+
+ 
+ 
+ 
+ LDexpress(
+   bmi_snp$SNP,
+   pop = "xxx",
+   tissue = "xxx",
+   r2d = "xxx",
+   r2d_threshold = xxx,
+   p_threshold = xxx,
+   win_size = xxx,
+   genome_build = "xxx",
+   token = "xxx" ,
+   file = FALSE,
+   api_root = "xxx"
+ )
+ 
+ 
+ install.packages("remotes")
+ remotes::install_github("MRCIEU/ieugwasr")
+ 
+ library("remotes")
+ library("ieugwasr") 
+ 
+bmi_file <- ld_clump(
+   dat = xxx,
+   clump_kb = xxx,
+   clump_r2 = xxx,
+   clump_p = xxx,
+   pop = "xxx",
+   access_token = "xxx" ,
+   bfile = xxx,
+   plink_bin = xxx
+ )
+ 
+
+
+write.csv(xxx, file = "xxx.csv", row.names = FALSE)
+
+
+write.csv(xxx, file = "xxx.csv", row.names = FALSE)
+
+xxx <- ld_clump(
+  dat = xxx,
+  clump_kb = xxx,
+  clump_r2 = xxx,
+  clump_p = xxx,
+  pop = "xxx",
+  access_token = "xxx" ,
+  bfile = xxx,
+  plink_bin = xxx
+)
+
+
+
+##for crp snps##
+
+xxx <- read.csv("xxx.csv", header = TRUE)  
+
+
+
+crp_file <- ld_clump(
+  dat = xxx,
+  clump_kb = xxx,
+  clump_r2 = xxx,
+  clump_p = xx,
+  pop = "xxx",
+  access_token = "xxx" ,
+  bfile = xxx,
+  plink_bin = xxx
+)
+
+#xxx
+
+xxx <- read.csv("xxx.csv", header = TRUE)  
+
+
+xxx <- ld_clump(
+  dat = xxx,
+  clump_kb = xxx,
+  clump_r2 = xxx,
+  clump_p = xxx,
+  pop = "xxx",
+  access_token = "xxx" ,
+  bfile = NULL,
+  plink_bin = NULL
+)
+
+
+
+
+write.csv(xxx, file = "xxx.csv", row.names = FALSE)
+
+
+write.csv(xxx, file = "xxx.csv", row.names = FALSE)
+
+
+##xxx snps##
+
+
+xxx <- read.table("x.txt", header = TRUE, sep = "\t", quote = "", fill = TRUE)
+
+
+xxx <- ld_clump(
+  dat = xxx,
+  clump_kb = xxx,
+  clump_r2 = xxx,
+  clump_p = xxx,
+  pop = "xxx",
+  access_token = "xxx" ,
+  bfile = NULL,
+  plink_bin = NULL
+)
+
+
+write.csv(xxx, file = "xxx.csv", row.names = FALSE)
+
+xxx <- read.csv("xxx.csv", header = TRUE) 
+
+
+xxx <- ld_clump(
+  dat = xxx,
+  clump_kb = xxx,
+  clump_r2 = xxx,
+  clump_p = xxx,
+  pop = "xxx",
+  access_token = "xxx" ,
+  bfile = NULL,
+  plink_bin = NULL
+)
+
+
+
+write.csv(xxx, file = "xxx.csv", row.names = FALSE)
+
+
+
+ 
