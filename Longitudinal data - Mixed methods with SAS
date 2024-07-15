@@ -1,0 +1,319 @@
+
+
+DATA WORK.capstone_coding;
+    SET WORK.IMPORT10;
+    age_i = age_yrs * 12;
+    age = age_i + age_mnts;   
+    IF floor_type_earth = "Checked" THEN 
+        floor = 3;
+    ELSE IF floor_type_cement = "Checked" THEN 
+        floor = 2;
+    ELSE IF floor_type_ceramic = "Checked" THEN 
+        floor = 1;
+    ELSE IF floor_type_other = "Checked" THEN 
+        floor = 4;
+    ELSE IF floor_type_na = "Checked" THEN 
+        floor = 5;
+    ELSE 
+        floor = .;
+    
+    IF roof_sheet = "Checked" THEN 
+        roof = 3;
+    ELSE IF roof_straw = "Checked" THEN 
+        roof = 2;
+    ELSE IF roof_terrace = "Checked" THEN 
+        roof = 1;
+    ELSE IF roof_other = "Checked" THEN 
+        roof = 4;
+    ELSE IF roof_na = "Checked" THEN 
+        roof = 5;
+    ELSE 
+        roof = .;
+    
+    IF wall_wood = "Checked" THEN wall = 3;
+    ELSE IF wall_canvas = "Checked" THEN wall = 1;
+    ELSE IF wall_block = "Checked" THEN wall = 4;
+    ELSE IF wall_sheet = "Checked" THEN wall = 2;
+    ELSE wall = .;   
+    housing = floor + roof + wall;   
+    IF diff_food_this_yr = "SI" THEN 
+        food_availability = 1;
+    ELSE IF fd_pur_enough_this_yr = "SI" THEN 
+        food_availability = 0;
+    ELSE 
+        food_availability = .;    
+    IF run_out_of_fd_lst_mnth = "SI" OR athome_mssdmeal_last_mth = "SI" THEN 
+        food_sufficient = 1;
+    ELSE IF pst_mth_undr5_1meal_day = "SI" THEN 
+        food_sufficient = 2;
+    ELSE IF pst_mth_undr5_noml_day = "SI" THEN 
+        food_sufficient = 3;
+    ELSE 
+        food_sufficient = .;  
+    food_security = catx(',', food_availability, food_sufficient);
+RUN; 
+
+*#removing time from the date&time values ##*;
+
+data WORK.capstone_coding1;
+    set WORK.capstone_coding;
+    /* Convert character variable to SAS date */
+    new_date = input(fecha_visita, anydtdte.);
+    format new_date date9.;
+run;
+
+data WORK.capstone_coding1;
+    set WORK.capstone_coding;
+    
+    /* Convert character variable to SAS datetime */
+    new_datetime = input(fecha_visita, datetime20.);
+    
+    /* Extract date portion */
+    new_date = datepart(new_datetime);
+    
+    /* Format date variable */
+    format new_date date9.;
+run;
+
+
+
+data WORK.capstone_coding1;
+   set WORK.capstone_coding;
+   new_date = datepart(fecha_visita);
+   format new_date date9.;
+run;  
+
+*#creating a new column with just the month value(numeric format) ##*;
+
+data capstone_coding2;
+    set capstone_coding1; /* Replace your_dataset with the name of your dataset */
+    
+    /* Convert character variable to SAS date */
+    followup_date1 = input(followup_date, mmddyy10.); /* Assuming date format is mm/dd/yyyy */
+    
+    /* Extract month value from SAS date */
+    month_value = month(followup_date1);
+run;
+
+
+data WORK.capstone_coding3;
+   set WORK.capstone_coding2;
+   month_value2 = month(new_date);
+run;
+
+
+
+*#renaming variables##*;
+
+data WORK.FOLLOWUP1;
+   set WORK.FOLLOWUP(rename=(id_malnutricion = id_malntn    redcap_repeat_instrument = repeat_instru));
+run;
+
+
+data WORK.DIETRECALL3;
+   set WORK.DIETRECALL2;
+   if _n_ not in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18 , 19);
+run;
+
+proc sort data= WORK.DIETRECALL3;
+   by id_malntn month_value;
+run;
+
+proc sort data= WORK.FOLLOWUP1;
+   by id_malntn month_value;
+run;
+
+
+
+*#Joining the 24-hr diet recall and followup datasets #*;
+
+data combined_dataset;
+   merge WORK.DIETRECALL3(in=has_recall) WORK.FOLLOWUP1(in=has_followup);
+   by id_malntn month_value;
+   if has_recall and has_followup and repeat_instru = "recordatorio 24 horas" or repeat_instru = "seguimiento";
+run;
+
+
+
+*# this code removes the followup information that doesnt have month values##*;
+
+data WORK.combined_dataset;
+   merge WORK.DIETRECALL3(in=has_recall) WORK.FOLLOWUP1(in=has_followup);
+   by id_malntn month_value;
+   if has_recall and has_followup and (repeat_instru = "recordatorio 24 horas" or repeat_instru = "seguimiento");
+run;
+
+
+
+data WORK.registration;
+   set WORK.CAPSTONE_CODING (rename=( id_malnutrición = id_malntn));  
+   IF repeat_instru = "Seguimiento"  THEN DELETE;
+run;
+
+*To remove followup info that doesnt match with with 24hr diet recall*;
+
+/* Step 1: Sort both datasets by id_malntn and month_value */
+proc sort data=WORK.DIETRECALL3 out=sorted_dietrecall;
+   by id_malntn month_value;
+run;
+
+proc sort data=WORK.FOLLOWUP1 out=sorted_followup;
+   by id_malntn month_value;
+run;
+
+/* Step 2: Merge the sorted datasets */
+data combined_dataset1;
+   merge sorted_dietrecall(in=has_recall) sorted_followup(in=has_followup);
+   by id_malntn month_value;
+
+   /* Step 3: Keep the last row with the same month_value in the follow-up dataset */
+   retain last_month_value;
+   if has_followup and last_month_value ne month_value then do;
+      output;
+      last_month_value = month_value;
+   end;
+
+   /* Step 4: Drop the last_month_value variable from the output dataset */
+   drop last_month_value;
+ 
+run;
+
+
+/* Removing unwanted rows */;
+
+DATA combined_dataset1;
+SET combined_dataset1;
+IF calorie_prot = " " THEN DELETE;
+RUN;
+
+
+*#merging the registration dataset with the diet recall and followup datasets #*;
+
+DATA merged_dataset1;
+    SET combined_dataset1;
+RUN;
+
+DATA merged_dataset1;
+    SET merged_dataset1
+        WORK.registration (IN=reg);
+RUN;
+
+
+
+PROC SORT DATA=merged_dataset1;
+    BY id_malntn;
+RUN;
+
+data merged_dataset1;
+  set merged_dataset1;
+  calorie_fat_numeric = input(calorie_fat, best12.); 
+  drop calorie_fat;
+  rename calorie_fat_numeric = calorie_fat;
+run;
+
+data merged_dataset1;
+  set merged_dataset1;
+  if _n_ > 15; /* Exclude the first 15 rows since they dont have 24 hour diet recall values*/
+run;
+
+
+proc freq data=merged_dataset1;
+  tables _all_ / missing;
+run;
+
+
+
+/*Shifting the dataset to R. Please refer to the Rcode for further details. Dataset will be brought back here again*/;
+
+
+*#first trial of mixed effects with just the exposure and outcome variables#*;
+
+proc mixed data=merged_dataset;
+  class id_malntn;  
+  model p_t_seguir = calorie_carb calorie_fat calorie_prot calorie_24 /
+    solution;
+  random intercept / subject=id_malntn;
+run;
+
+proc mixed data=merged_dataset;
+  class id_malntn;  
+  model p_e_seguir = calorie_carb calorie_fat calorie_prot calorie_24 /
+    solution;
+  random intercept / subject=id_malntn;
+run;
+
+proc mixed data=merged_dataset;
+  class id_malntn; 
+  model t_e_seguir = calorie_carb calorie_fat calorie_prot calorie_24 /
+    solution;
+  random intercept / subject=id_malntn;
+run;
+
+*##Junk foods analysis ##*;
+
+proc mixed data=merged_dataset;
+  class id_malntn;  
+  model p_t_seguir = freq_carbdrnk freq_saltsnack freq_sweets /
+    solution;
+  random intercept / subject=id_malntn;
+run;
+
+
+proc mixed data=merged_dataset;
+  class id_malntn freq_carbdrnk freq_saltsnack freq_sweets;  /* Include categorical variables in the CLASS statement */
+  model p_t_seguir = freq_carbdrnk freq_saltsnack freq_sweets / solution; /* Model with categorical predictors */
+  random intercept / subject=id_malntn; /* Random intercept for each subject (id_malntn) */
+run;
+
+
+
+proc mixed data=merged_dataset;
+  class id_malntn freq_carbdrnk freq_saltsnack freq_sweets month_value; /* Include categorical variables and time in the CLASS statement */
+  model p_t_seguir = freq_carbdrnk freq_saltsnack freq_sweets month_value / solution; /* Model with categorical predictors and time */
+  random intercept month_value / subject=id_malntn; /* Random intercept and time for each subject (id_malntn) */
+  repeated month_value / subject=id_malntn type=un; /* Specify the repeated measures structure using month_value */
+run;
+
+
+
+proc mixed data=merged_dataset;
+  class id_malntn freq_carbdrnk freq_saltsnack freq_sweets month_value;
+  model p_t_seguir = freq_carbdrnk freq_saltsnack freq_sweets month_value / solution;
+  random intercept month_value / subject=id_malntn;
+  repeated month_value / subject=id_malntn type=un;
+  lsmeans freq_carbdrnk freq_saltsnack freq_sweets / cl=0.95; /* Specify confidence level (e.g., 95%) */
+run;
+
+
+
+proc mixed data=merged_dataset;
+  class id_malntn month_value;  
+  model p_e_seguir = calorie_carb calorie_fat calorie_prot calorie_24  /
+    solution;
+  random intercept month_value/ subject=id_malntn;
+run;
+
+proc mixed data=merged_dataset;
+  class id_malntn; 
+  model t_e_seguir = calorie_carb calorie_fat calorie_prot calorie_24 /
+    solution;
+  random intercept / subject=id_malntn;
+run;
+
+
+*#The code below isnt working #*;
+
+proc mixed data=merged_dataset;
+  class id_malntn mother_education SEXO; 
+  model p_t_seguir = calorie_carb calorie_fat calorie_prot calorie_24 age housing food_sufficient food_availability /
+    solution;
+  random intercept / subject=id_malntn;
+run;
+
+
+
+
+
+
+
+
