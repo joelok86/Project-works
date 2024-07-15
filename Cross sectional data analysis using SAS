@@ -1,0 +1,439 @@
+
+PROC IMPORT DATAFILE=REFFILE
+	DBMS=XLSX
+	OUT=WORK.IMPORT4;
+	GETNAMES=YES;
+RUN;
+
+PROC CONTENTS DATA=WORK.import4; RUN;
+
+DATA	WORK.IMPORT5;
+	SET	WORK.IMPORT4;
+
+	Creat4	= INPUT(serumCr, 8.);
+
+	RUN;
+DATA WORK.IMPORT6;
+SET WORK.IMPORT5;
+IF Gender = 'F' THEN i = Creatinine / 0.7;
+IF i < 1  THEN j = i ** -0.241;
+ELSE j = 1;
+IF Gender = 'M'  THEN i = Creatinine / 0.9;
+IF i < 1  THEN j = i ** -0.302;
+ELSE j = 1;
+RUN;
+
+DATA WORK.IMPORT7;
+SET WORK.IMPORT6;
+IF i > 1   THEN k = i ** -1.2;
+IF i < 1   THEN k = 1;
+m = 0.9938 ** age;
+IF Gender = 'F'  THEN t = 142 * j * k * m * 1.012;
+IF Gender = 'M'  THEN t = 142 * j * k * m;
+RUN;
+
+DATA WORK.IMPORT8;
+SET WORK.IMPORT7;
+gfr = ROUND(t);
+RUN;
+
+DATA WORK.IMPORT9;
+SET WORK.IMPORT8;
+IF Gender = 'F' THEN a = Creat4 / 0.7;
+IF a < 1  THEN b = a ** -0.241;
+ELSE b = 1;
+IF Gender = 'M'  THEN a = Creat4 / 0.9;
+IF a < 1  THEN b = a ** -0.302;
+ELSE b = 1;
+RUN;
+DATA WORK.IMPORT10;
+SET WORK.IMPORT9;
+IF a > 1   THEN e = a ** -1.2;
+IF a < 1   THEN e = 1;
+c = 0.9938 ** age;
+IF Gender = 'F'  THEN d = 142 * b * e * c * 1.012;
+IF Gender = 'M'  THEN d = 142 * b * e * c;
+RUN;
+DATA WORK.IMPORT11;
+SET WORK.IMPORT10;
+gfrs = ROUND(d);
+RUN;
+
+DATA WORK.IMPORT12;
+SET  WORK.IMPORT11;
+IF gfr = " " THEN CKD = 'No';
+ELSE IF gfr < = 60 THEN CKD = 'Yes';
+ELSE CKD = 'No';
+RUN;
+
+DATA WORK.IMPORT13;
+SET WORK.IMPORT12;
+IF CKD = 'Ye' AND gfrs < 60 THEN CKDF = 'Ye';
+ELSE CKDF = CKD;
+RUN;
+
+DATA WORK.IMPORT14;
+SET WORK.IMPORT13;
+IF Ualbumin = 'POSITIVE' AND UALB2 = 'POSITIVE' THEN ALBF = 'Yes';
+ELSE IF Ualbumin = 'POSITIVE' AND UALB2 = ' '  THEN ALBF = 'Yes';
+ELSE IF Ualbumin = 'TRACE' AND UALB2 = 'TRACE' THEN ALBF = 'KL';
+RUN;
+
+DATA WORK.IMPORT15;
+SET WORK.IMPORT14;
+IF ALBF = 'KL' AND DM = 'Yes' THEN ALBK = 'Yes';
+IF ALBF = 'KL' AND Glucose > 200 THEN ALBK = 'Yes';
+IF ALBF = 'Yes' THEN ALBK = 'Yes';
+RUN;
+
+DATA WORK.IMPORT16;
+SET WORK.IMPORT15;
+IF CKDF = 'No' AND ALBK = 'Yes'  THEN CKDF3 = 'Yes';
+IF CKDF = 'Ye' THEN CKDF3 = 'Yes';
+ELSE CKDF3 = 'No';
+RUN;
+PROC FREQ	DATA = WORK.IMPORT16;
+	TABLES	CKDF3 ;
+	RUN;
+	
+
+DATA WORK.IMPORT17;
+SET WORK.IMPORT16;
+IF age = ' ' THEN agecat = '       ';
+ELSE IF age = 'Angan' THEN agecat = '       ';
+ELSE IF age < = 29  THEN agecat = '18TO29';
+ELSE IF age < = 44 THEN agecat = '30TO44';
+ELSE IF age < = 59 THEN agecat = '45TO59';
+ELSE IF age < = 69 THEN agecat = '60TO69';
+ELSE IF age > = 70 THEN agecat = 'Above70';
+RUN;
+
+DATA WORK.IMPORT18;
+SET WORK.IMPORT17;
+IF HB2 = ' ' THEN HB2 = HB;
+IF Gender = 'M' AND HB2 < 13 THEN ANEMIA = 'YES';
+ELSE IF Gender = 'F' AND HB2 < 12 THEN ANEMIA = 'YES';
+ELSE ANEMIA = 'No';
+RUN;
+
+DATA WORK.IMPORT19;
+SET WORK.IMPORT18;
+IF DM = 'yes' OR Glucose > 200 THEN DMFINAL = 'Yes';
+ELSE DMFINAL = 'No';
+RUN;
+DATA WORK.IMPORT31;
+SET WORK.IMPORT19;
+SBPF = SBP + SBP2;
+DBPF = DBP + DBP2;
+RUN;
+
+DATA WORK.IMPORT33;
+SET WORK.IMPORT31;
+IF SBP2 = ' ' THEN SBPFINAL = SBPF;
+ELSE SBPFINAL = SBPF / 2 ;
+IF DBP2 = ' ' THEN DBPFINAL = DBPF;
+ELSE DBPFINAL = DBPF / 2 ;
+RUN;
+
+DATA WORK.IMPORT34;
+SET WORK.IMPORT33;
+IF SBPFINAL > 140 THEN HPT = 'Yes';
+ELSE IF DBPFINAL > 90  THEN HPT = 'Yes';
+ELSE IF HTN = 'Yes'  THEN HPT = 'Yes';
+ELSE HPT = 'No';
+RUN;
+
+DATA WORK.IMPORT35;
+SET WORK.IMPORT34;
+IF Waistcircum = ' ' THEN STATUS = '       ';
+ELSE IF gender = 'F' AND Waistcircum > 80 THEN STATUS = 'OBESE';
+ELSE IF gender = 'M' AND Waistcircum > 90 THEN STATUS = 'OBESE';
+ELSE STATUS = 'NONOBESE';
+RUN;
+PROC SORT DATA = WORK.IMPORT35;
+BY age;
+RUN;
+
+PROC FREQ DATA = WORK.IMPORT35;
+    TABLES agecat ;
+  WHERE CKDF3 = 'Yes';
+RUN;
+
+PROC SGPLOT DATA = WORK.IMPORT35;
+VBAR agecat / group = CKDF3 GROUPDISPLAY = CLUSTER;
+TITLE 'Prevalence of CKD in different age groups';
+RUN;
+PROC SORT DATA = WORK.IMPORT35;
+BY CKDF3;
+RUN;
+	
+PROC FREQ DATA = WORK.IMPORT35;
+TABLES typeoil DMFINAL HPT outdoorjob sourceofwater saltamount gender;
+BY CKDF3;
+RUN;
+
+PROC FREQ DATA = WORK.IMPORT35;
+TABLES typeoil DMFINAL HPT outdoorjob sourceofwater saltamount gender;
+WHERE CKDF3 = 'Yes';
+RUN;
+
+PROC SORT DATA = WORK.IMPORT35;
+BY CKDF3;
+RUN;
+	
+PROC FREQ Data= WORK.IMPORT35; 
+ TABLES agecat * Gender;  
+ BY CKDF3; 
+RUN; 
+
+proc freq data = WORK.IMPORT35;
+tables CKDF3 * agecat / chisq norow nocol nofreq;
+run;	
+proc freq data = WORK.IMPORT35;
+tables CKDF3 * smoke / chisq norow nocol nofreq;
+run;
+proc freq data = WORK.IMPORT35;
+tables CKDF3 * cigarsday / chisq norow nocol nofreq;
+run;
+proc freq data = WORK.IMPORT35;
+tables CKDF3 * DMFINAL / chisq norow nocol nofreq;
+run;
+proc freq data = WORK.IMPORT35;
+tables CKDF3 * HPT / chisq norow nocol nofreq;
+run;
+proc freq data = WORK.IMPORT35;
+tables CKDF3 * outdoorjob / chisq norow nocol nofreq;
+run;
+proc freq data = WORK.IMPORT35;
+tables CKDF3 * Alcohol / chisq norow nocol nofreq;
+run;
+proc freq data = WORK.IMPORT35;
+tables CKDF3 * gender / chisq norow nocol nofreq;
+run;
+proc freq data = WORK.IMPORT35;
+tables CKDF3 * Highbloodcholesterol / chisq norow nocol nofreq;
+run;
+proc freq data = WORK.IMPORT35;
+tables CKDF3 * OCP / chisq norow nocol nofreq;
+run;
+proc freq data = WORK.IMPORT35;
+tables CKDF3 * noofyrs / chisq norow nocol nofreq;
+run;
+proc freq data = WORK.IMPORT35;
+tables CKDF3 * tobaccochewing / chisq norow nocol nofreq;
+run;
+proc freq data = WORK.IMPORT35;
+tables CKDF3 * Frequency / chisq norow nocol nofreq;
+run;
+proc freq data = WORK.IMPORT35;
+tables CKDF3 * STATUS/  chisq norow nocol nofreq;
+run;
+proc freq data = WORK.IMPORT35;
+tables CKDF3 * HPT /  chisq norow nocol nofreq;
+run;
+proc freq data = WORK.IMPORT35;
+tables CKDF3 * yrsofHTN /  chisq norow nocol nofreq;
+run;
+proc freq data = WORK.IMPORT35;
+tables CKDF3 * UTI/  chisq norow nocol nofreq;
+run;
+proc freq data = WORK.IMPORT35;
+tables CKDF3 * outdoorjob/  chisq norow nocol nofreq;
+run;
+proc freq data = WORK.IMPORT35;
+tables CKDF3 * Snakebite/  chisq norow nocol nofreq;
+run;
+proc freq data = WORK.IMPORT35;
+tables CKDF3 * Stroke/  chisq norow nocol nofreq;
+run;
+proc freq data = WORK.IMPORT35;
+tables CKDF3 * jobabroad/  chisq norow nocol nofreq;
+run;
+proc freq data = WORK.IMPORT35;
+tables CKDF3 * workingDAYS/  chisq norow nocol nofreq;
+run;
+proc freq data = WORK.IMPORT35;
+tables CKDF3 * livebirths/  chisq norow nocol nofreq;
+run;
+proc freq data = WORK.IMPORT35;
+tables CKDF3 * Frequencyofnonveg/  chisq norow nocol nofreq;
+run;
+proc freq data = WORK.IMPORT35;
+tables CKDF3 * Freqofoutsidefood/  chisq norow nocol nofreq;
+run;
+proc freq data = WORK.IMPORT35;
+tables CKDF3 * Foodhabit/  chisq norow nocol nofreq;
+run;
+proc freq data = WORK.IMPORT35;
+tables CKDF3 * Traditionalmedicine/  chisq norow nocol nofreq;
+run;
+proc freq data = WORK.IMPORT35;
+tables CKDF3 * sourceofwater/  chisq norow nocol nofreq;
+run;
+proc freq data = WORK.IMPORT35;
+tables CKDF3 * saltamount/  chisq norow nocol nofreq;
+run;
+proc freq data = WORK.IMPORT35;
+tables CKDF3 * iodisedsalt/  chisq norow nocol nofreq;
+run;
+proc freq data = WORK.IMPORT35;
+tables CKDF3 * oilamount/  chisq norow nocol nofreq;
+run;
+proc freq data = WORK.IMPORT35;
+tables CKDF3 * typeoil/  chisq norow nocol nofreq;
+run;
+proc freq data = WORK.IMPORT35;
+tables CKDF3 * oilamount/  chisq norow nocol nofreq;
+run;
+proc freq data = WORK.IMPORT35;
+tables CKDF3 * Cookingfuel/  chisq norow nocol nofreq;
+run;
+proc freq data = WORK.IMPORT35;
+tables CKDF3 * toilet/  chisq norow nocol nofreq;
+run;
+proc freq data = WORK.IMPORT35;
+tables CKDF3 * Kitchen/  chisq norow nocol nofreq;
+run;
+proc freq data = WORK.IMPORT35;
+tables CKDF3 * drainagetype/  chisq norow nocol nofreq;
+run;
+DATA WORK.IMPORT36;
+SET WORK.IMPORT35;
+IF cigarsday < 1 THEN smokeyrs = "NONE";
+ELSE IF cigarsday < 2 THEN smokeyrs = "1TO2";
+ELSE IF cigarsday < 3 THEN smokeyrs = "2TO3";
+ELSE IF cigarsday < 5 THEN smokeyrs = "3TO5";
+ELSE IF cigarsday < 10 THEN smokeyrs = "5TO10";
+ELSE IF cigarsday < = 15 THEN smokeyrs = "10TO15";
+ELSE IF cigarsday > 15 THEN smokeyrs = "MORETHAN15";
+RUN;
+proc freq data = WORK.IMPORT36;
+tables CKDF3 * smokeyrs/  chisq norow nocol nofreq;
+run;
+
+proc logistic data = WORK.IMPORT36;
+class  agecat (ref = "18TO29") HPT(REF= "No") /  param = ref;
+model agecat = HPT  / link = glogit;
+run; 
+proc logistic data = WORK.IMPORT36;
+class  agecat (ref = "18TO29") DMFINAL(REF= "No") /  param = ref;
+model agecat = DMFINAL  / link = glogit;
+run; 
+proc logistic data = WORK.IMPORT36;
+class  CKDF3(REF= "No") ANEMIA(REF= "No")/  param = ref;
+model CKDF3 = ANEMIA  / link = glogit;
+run;
+proc logistic data = WORK.IMPORT36;
+class  smoke(ref = "Never") Alcohol(ref = "Never") outdoorjob(ref = "No")/  param = ref;
+model smoke = Alcohol outdoorjob / link = glogit;
+run;
+proc logistic data = WORK.IMPORT36;
+class  smoke(ref = "Never")  outdoorjob(ref = "No")/  param = ref;
+model smoke = outdoorjob / link = glogit;
+run;
+proc logistic data = WORK.IMPORT36;
+class  Alcohol(ref = "Never")  outdoorjob(ref = "No")/  param = ref;
+model  Alcohol = outdoorjob / link = glogit;
+run;
+
+                                       
+proc logistic data = WORK.IMPORT36;
+class CKDF3(ref = "No")  agecat (ref = "18TO29") smoke(ref = "Never") 
+  outdoorjob(ref = "No") Alcohol(ref = "Never")
+  /  param = ref;
+model CKDF3=  agecat smoke  outdoorjob Alcohol / SELECTION = FORWARD ;
+run; 
+
+
+
+*FINAL MODEL*;
+proc logistic data = WORK.IMPORT36;
+class CKDF3(ref = "No")  agecat (ref = "18TO29" ) smoke(ref = "Never") 
+  HPT(REF= "No") smokeyrs(REF = "NONE") Outdoorjob(REF = "No")
+ Alcohol(REF = "Never") tobaccochewing(REF = "Never")/  param = ref;
+model CKDF3= agecat smoke Alcohol   HPT Outdoorjob
+ tobaccochewing smokeyrs / SELECTION = FORWARD;
+run; 
+
+proc logistic data = WORK.IMPORT36;
+class CKDF3(ref = "No")  agecat (ref = "18TO29" ) smoke(ref = "Never") Alcohol(ref="Never")
+  HPT(REF= "No") 
+ /  param = ref;
+model CKDF3= agecat smoke HPT 
+  / SELECTION = FORWARD;
+run;
+
+*FIGURES*;
+
+ods graphics on;
+proc freq data= WORK.IMPORT36;
+tables CKDF3 * agecat / norow chisq plots=MOSAIC; /* alias for MOSAICPLOT */
+run;
+
+ods graphics on;
+proc freq data= WORK.IMPORT36;
+tables ANEMIA * agecat / norow chisq plots=MOSAIC; /* alias for MOSAICPLOT */
+run;
+ods graphics on;
+proc freq data= WORK.IMPORT36;
+tables ANEMIA * Gender / norow chisq plots=MOSAIC; /* alias for MOSAICPLOT */
+run;
+PROC SORT DATA=WORK.IMPORT36;
+BY agecat;
+RUN;
+
+ods graphics on;
+proc freq data= WORK.IMPORT36;
+tables ANEMIA * Gender / norow chisq plots=MOSAIC; 
+BY agecat;
+run;
+
+ods graphics on;
+proc freq data= WORK.IMPORT36;
+tables CKDF3 * smoke / norow chisq plots=MOSAIC;
+run;
+
+ods graphics on;
+proc freq data= WORK.IMPORT36;
+tables Outdoorjob *  smokeyrs  / norow chisq plots=MOSAIC; /* alias for MOSAICPLOT */
+run;
+ods graphics on;
+proc freq data= WORK.IMPORT36;
+tables Outdoorjob *  smoke  / norow chisq plots=MOSAIC; /* alias for MOSAICPLOT */
+run;
+ods graphics on;
+proc freq data= WORK.IMPORT36;
+tables DMFINAL *  UTI / norow chisq plots=MOSAIC; /* alias for MOSAICPLOT */
+run;
+ods graphics on;
+proc freq data= WORK.IMPORT36;
+tables CKDF3 *  UTI / norow chisq plots=MOSAIC; /* alias for MOSAICPLOT */
+run;
+ods graphics on;
+proc freq data= WORK.IMPORT36;
+tables CKDF3 *  smokeyrs / norow chisq plots=MOSAIC; /* alias for MOSAICPLOT */
+run;
+ods graphics on;
+proc freq data= WORK.IMPORT36;
+tables CKDF3 *  HPT / norow chisq plots=MOSAIC; /* alias for MOSAICPLOT */
+run;
+
+ods graphics on;
+proc freq data= WORK.IMPORT36;
+tables CKDF3 * Alcohol / norow chisq plots=MOSAIC; /* alias for MOSAICPLOT */
+run;
+ods graphics on;
+proc freq data= WORK.IMPORT36;
+tables CKDF3 * outdoorjob / norow chisq plots=MOSAIC; /* alias for MOSAICPLOT */
+run;
+ods graphics on;
+proc freq data= WORK.IMPORT36;
+tables CKDF3 * smoke / norow chisq plots=MOSAIC; /* alias for MOSAICPLOT */
+run;
+
+PROC FREQ DATA = WORK.IMPORT36;
+TABLES CKDF3;
+RUN;
+
+ 
+
