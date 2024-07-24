@@ -10,8 +10,8 @@ text_data <- read.delim(" ", header = TRUE, sep = " ", quote = "", fill = TRUE, 
 
 xxx <- read.delim(" ", header = TRUE, strip.white = TRUE)
 write.csv(l, file = "locke.csv", row.names = TRUE)
-filtered_data_bmi <- subset(locke_data, P < xxx)
-write.csv(filtered_data_bmi, file = ".csv", row.names = TRUE)
+filtered_data <- subset(data, P < xxx)
+write.csv(filtered_data, file = ".csv", row.names = TRUE)
 
 
 
@@ -19,7 +19,7 @@ write.csv(filtered_data_bmi, file = ".csv", row.names = TRUE)
 data_sec <- data.frame(text_data)
 locke <- ".csv"
 sec <- ".csv"
-write.csv(data_BMIsec, file = xxx, row.names = TRUE)
+write.csv(data_sec, file = xxx, row.names = TRUE)
 
 
 
@@ -28,10 +28,10 @@ text_data <- read.delim(".txt", header = TRUE, sep = " ", quote = "", fill = TRU
 
 data <- data.frame(text_data)
 BMI_index <- ".csv"
-write.csv(data, file = BMI_index, row.names = TRUE)
+write.csv(data, file = index, row.names = TRUE)
 
 
-##WHR adj BMI index SNPs ##
+##BMI index SNPs ##
 text_data <- read.delim(".txt", header = TRUE, sep = " ", quote = "", fill = TRUE, stringsAsFactors = FALSE)
 
 data <- data.frame(text_data)
@@ -40,30 +40,30 @@ write.csv(data, file = index, row.names = TRUE)
 
 
 
-##WHR adj BMI sec SNPs##
+##SNPs##
 text_data <- read.delim(".txt", header = TRUE, sep = " ", quote = "", fill = TRUE, stringsAsFactors = FALSE)
 
 data <- data.frame(text_data)
 BMI_sec <- ".csv"
-write.csv(data, file = BMI_sec, row.names = TRUE)
+write.csv(data, file = sec, row.names = TRUE)
 
 
-#WHR Index SNPs##
+#Index SNPs##
 text_data <- read.delim(".txt", header = TRUE, sep = " ", quote = "", fill = TRUE, stringsAsFactors = FALSE)
 
 data <- data.frame(text_data)
 whr_index <- ".csv"
-write.csv(data, file = whr_index, row.names = TRUE)
+write.csv(data, file = index, row.names = TRUE)
 
 
-##WHR sec SNPs##
+##sec SNPs##
 text_data <- read.delim(".txt", header = TRUE, sep = " ", quote = "", fill = TRUE, stringsAsFactors = FALSE)
 
 data <- data.frame(text_data)
 whr_sec <- ".csv"
-write.csv(data, file = whr_sec, row.names = TRUE)
+write.csv(data, file = sec, row.names = TRUE)
 
-## rcode for OA SNPs ##
+##  SNPs ##
 
 library(readr)    # For reading text files
 library(data.table)
@@ -91,7 +91,7 @@ text_data <- read.delim(".txt", header = TRUE, sep = " ", quote = "", fill = TRU
 ##strip.white removes the variable spaces before and after a variable ##
 
 
- data <- read.delim("hip_oa_snp.txt", header = TRUE, strip.white = TRUE)
+ data <- read.delim("snp.txt", header = TRUE, strip.white = TRUE)
 
    colnames(data) <- c("SNPID", "EffectAllele", "AlternateAllele", "EffectAlleleFrequency", "EffectSize.Beta", "Pvalue", "SampleSize", "Chromosome", "Position", "EffectSize.OR")
  
@@ -187,17 +187,17 @@ text_data <- read.delim(".txt", header = TRUE, sep = " ", quote = "", fill = TRU
    
  
    
-##IL6 data ##
+##IL data ##
    
    setwd("xxxx")    
    
- il6_r_data <- read.csv(".csv", header = TRUE)  
+ il_r_data <- read.csv(".csv", header = TRUE)  
    
- il6r_data <- subset(xx, select = -X)
+ ilr_data <- subset(xx, select = -X)
  
- il6r_data$P <- as.numeric(xx$P)
+ ilr_data$P <- as.numeric(xx$P)
  
- il6r_data$logPvalue <- -log10(xx$Pval)
+ ilr_data$logPvalue <- -log10(xx$Pval)
    
  ##BiocManager-installation - snpstats ##
  
@@ -329,7 +329,7 @@ total_rows <- sum(sapply(ld_matrices, nrow))
 ##For solving all matrices at one go ##
  
  # Creating an empty list to store the data frames
- snp_df_list <- list()
+ df_list <- list()
  
  # Looping through the list of matrices
  for (i in 1:length(ld_matrices)) {
@@ -398,7 +398,7 @@ total_rows <- sum(sapply(ld_matrices, nrow))
  
  
  # Splitting the dataframe based on intersecting_value
- snp_df_less_than_001 <- snp_df[snp_df$intersecting_value < xx, ]
+ snp_df_less_than_1 <- snp_df[snp_df$intersecting_value < xx, ]
  snp_df_greater_than_equal <- snp_df[snp_df$intersecting_value >= xx, ]
  
  
@@ -416,7 +416,7 @@ total_rows <- sum(sapply(ld_matrices, nrow))
  filtered_joined_column <- unique_joined_column[!(unique_joined_column %in% snp_df_greater_than_equal$RS_number | unique_joined_column %in% snp_df_greater_than_equal$col_snp)]
  
  
- ## this gave an empty dataset. This means that all the snps in the dataset less than r2 0.01 are there in the dataset with greater than 0.01 r2 ##
+ ##
  
  
  match_indices <- match(snp_df_greater_than_equal_001$RS_number, subset_1$SNP)
@@ -483,7 +483,7 @@ match_indices <- match(snp_df_greater_than_equal$col_snp, subset_1$SNP)
    infos.chr,
    ind.row = rows_along(G),
    S = NULL,
-   thr.r2 = 0.2,
+   thr.r2 = xxx,
    size = xxx,
    infos.pos = NULL,
    is.size.in.bp = NULL,
@@ -495,7 +495,7 @@ match_indices <- match(snp_df_greater_than_equal$col_snp, subset_1$SNP)
  
  ind.keep <- snp_clumping(test1, infos.chr = test1$CHR,
                           infos.pos = test1$POS,
-                          thr.r2 = 0.01)
+                          thr.r2 = )
 
  
  
