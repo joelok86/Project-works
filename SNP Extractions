@@ -4,12 +4,12 @@ library(data.table)
 
 setwd("")
 
-##BMI secondary SNPs##
+##secondary SNPs##
 
 text_data <- read.delim(" ", header = TRUE, sep = " ", quote = "", fill = TRUE, stringsAsFactors = FALSE)
 
 xxx <- read.delim(" ", header = TRUE, strip.white = TRUE)
-write.csv(l, file = "locke.csv", row.names = TRUE)
+write.csv(l, file = ".csv", row.names = TRUE)
 filtered_data <- subset(data, P < xxx)
 write.csv(filtered_data, file = ".csv", row.names = TRUE)
 
