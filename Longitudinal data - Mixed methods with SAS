@@ -301,14 +301,6 @@ proc mixed data=merged_dataset;
 run;
 
 
-*#The code below isnt working #*;
-
-proc mixed data=merged_dataset;
-  class id_malntn mother_education SEXO; 
-  model p_t_seguir = calorie_carb calorie_fat calorie_prot calorie_24 age housing food_sufficient food_availability /
-    solution;
-  random intercept / subject=id_malntn;
-run;
 
 
 
