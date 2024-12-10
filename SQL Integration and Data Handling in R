@@ -1,0 +1,103 @@
+
+library(rJava)
+library(xlsxjars)
+library(xlsx)
+library()
+
+credit.data <- read.table("xxxx\\bmi_snp.txt",header = TRUE)
+View(credit.data)
+capstone_file <- read.csv("xxxx\\capstone_method_dataset.csv",header = TRUE)
+View(capstone_file) #To view the dataset#
+head(capstone_file) #To see the first 5 rows#
+library(dplyr)
+glimpse(capstone_file) #gives the variable names, class of the variable, no.of rows and no.of columns#
+
+str(capstone_file) # output similar to the glimpse function#
+
+colnames(capstone_file) #gives the variable names#
+
+library(readxl)
+library(writexl)
+excel_sheets("xxxx\\result_2b_below24te.xlsx")  #To see the sheet names.
+
+results <- read_excel("xxxx\\result_2b_below24te.xlsx",sheet ='Sheet 1')
+
+glimpse(results)
+
+sum(results['t_value'],na.rm=TRUE)
+
+
+var1 <- sample(5)
+var2 <- var1 / 10
+var3 <- c("R", "and", "Data Mining", "Examples", "Case Studies")
+df1 <- data.frame(var1, var2, var3)
+names(df1) <- c("Var.Int", "Var.Num", "Var.Char")
+write.csv(df1, "datfile.csv", row.names = FALSE)
+df2 <- read.csv("datfile.csv")
+print(df2)
+
+
+
+library(RMySQL)
+
+con <- dbConnect(RMySQL::MySQL(), 
+                 host = "xxxx", 
+                 port = xxxx, 
+                 dbname = "xxxx",         
+                 user = "xxxx", 
+                 password = "xxxx") 
+
+
+dbListTables(con) # List all tables in the database
+
+dbListFields(con, "mtcars")  # List all fields/columns in a specific table
+
+dbReadTable(con, "mtcars")   # Read the entire table into R as a data frame
+
+dframe <- dbReadTable(con, "mtcars") # Example of fetching the table using dbReadTable
+
+View(dframe) 
+
+
+querydframe <- dbGetQuery(con, "SELECT * FROM mtcars") 
+
+
+dbDisconnect(con) # Closing the database connection
+
+
+print(querydframe)  # Printing and summarize the results
+summary(querydframe) 
+
+
+
+library(RODBC)
+connection <- odbcConnect(dsn="xxxx",uid="xxxx",pwd="xxxx")
+query <- "SELECT * FROM data.mtcars LIMIT 10"
+
+myData <- sqlQuery(connection, query)
+
+myData <- sqlQuery(connection, query, errors=TRUE)
+odbcClose(connection)
+
+
+library(RODBC)
+filename <- "data/myxxcelfile.xls"
+xlsFile <- odbcConnectExcel(filename, readOnly = FALSE)
+sqlSave(xlsFile, a, rownames = FALSE)
+b <- sqlFetch(xlsFile, "sheetname")
+odbcClose(xlsFile)
+
+
+
+
+mtcars_file <- read.csv("xxxx\\mtcars.csv",header = TRUE)
+View(mtcars_file)
+head(mtcars_file)
+tail(mtcars_file)
+library(dplyr)
+glimpse(mtcars_file)
+str(mtcars_file)
+
+library(writexl)
+write_xlsx(mtcars_file, path = "mtcars.xlsx")
+
