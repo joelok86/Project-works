@@ -1,0 +1,299 @@
+---
+title: "Association of Age and Glioblastoma - GDC Data"
+author: "Jyothi"
+date: "2026-06-24"
+output: pdf_document
+---
+
+
+```{r setup, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(janitor)
+library(knitr)
+library(broom)
+
+options(scipen = 999)
+theme_set(theme_minimal(base_size = 12))
+```
+
+# Introduction
+
+I used open-access clinical data downloaded from the National Cancer Institute GDC Data Portal. The dataset used here is from the Foundation Medicine Adult Cancer Clinical Dataset (FM-AD), of spinal cord, cranial nerves, and other central nervous system tumor cases. This code includes basic data import, data quality checks, cohort characterization, visualization, and regression modeling. The analysis is only intended for demonstration of coding and analytic approach.
+
+# 1. Loading Data
+
+This section reads the GDC clinical TSV file. If the downloaded `.tar.gz` file is available in the working directory, the code extracts it.
+
+```{r }
+
+untar("gdc_download_20260624_005957.719701.tar.gz", exdir = "gdc_data")
+list.files("gdc_data", recursive = TRUE)
+ 
+library(readr)
+
+clinical_raw <- read_tsv(
+  "gdc_data/939753cd-bcf0-4d48-b8f1-1d0dea65bd69/FM-AD_Clinical.Spinal_Cord_Cranial_Nerves_And_Other_Parts_Of_Central_Nervous_System.tsv"
+)
+
+
+clinical_data <- clinical_raw %>%
+  clean_names()
+
+glimpse(clinical_data)
+```
+
+# 2. Data Quality
+
+```{r }
+data_quality <- clinical_data %>%
+  summarise(
+    total_rows = n(),
+    unique_cases = n_distinct(case_id),
+    unique_submitter_ids = n_distinct(cases_submitter_id),
+    missing_gender = sum(is.na(demographic_gender)),
+    missing_age_at_diagnosis = sum(is.na(diagnoses_age_at_diagnosis)),
+    missing_primary_diagnosis = sum(is.na(diagnoses_primary_diagnosis)),
+    missing_classification = sum(is.na(diagnoses_classification_of_tumor)),
+    missing_site = sum(is.na(diagnoses_site_of_resection_or_biopsy))
+  )
+
+kable(data_quality, digits = 1, caption = "Data Quality Summary")
+```
+
+```{r }
+missingness <- clinical_data %>%
+  summarise(across(everything(), ~ sum(is.na(.)))) %>%
+  pivot_longer(
+    cols = everything(),
+    names_to = "variable",
+    values_to = "missing_count"
+  ) %>%
+  mutate(
+    missing_percent = missing_count / nrow(clinical_data) * 100
+  ) %>%
+  arrange(desc(missing_percent))
+
+kable(missingness, digits = 1, caption = "Missingness by Variable")
+```
+
+
+Age at diagnosis is stored in days in the GDC file, so it is converted to years.
+
+```{r }
+analytic_data <- clinical_data %>%
+  mutate(
+    age_at_diagnosis_yrs = diagnoses_age_at_diagnosis / 365.25,
+    age_group = case_when(
+      age_at_diagnosis_yrs < 40 ~ "Under 40",
+      age_at_diagnosis_yrs >= 40 & age_at_diagnosis_yrs < 65 ~ "40-64",
+      age_at_diagnosis_yrs >= 65 ~ "65+",
+      TRUE ~ NA_character_
+    ),
+    diagnosis_group = case_when(
+      str_detect(str_to_lower(diagnoses_primary_diagnosis), "glioblastoma") ~ "Glioblastoma",
+      str_detect(str_to_lower(diagnoses_primary_diagnosis), "astrocytoma") ~ "Astrocytoma",
+      str_detect(str_to_lower(diagnoses_primary_diagnosis), "oligodendroglioma") ~ "Oligodendroglioma",
+      str_detect(str_to_lower(diagnoses_primary_diagnosis), "meningioma") ~ "Meningioma",
+      str_detect(str_to_lower(diagnoses_primary_diagnosis), "glioma") ~ "Other glioma",
+      TRUE ~ "Other CNS tumor"
+    ),
+    glioblastoma_flag = if_else(diagnosis_group == "Glioblastoma", 1, 0),
+    demographic_gender = str_to_title(demographic_gender),
+    age_group = factor(age_group, levels = c("Under 40", "40-64", "65+")),
+    diagnosis_group = factor(diagnosis_group),
+    demographic_gender = factor(demographic_gender)
+  )
+
+analytic_data %>%
+  select(
+    cases_submitter_id,
+    demographic_gender,
+    age_at_diagnosis_yrs,
+    age_group,
+    diagnoses_primary_diagnosis,
+    diagnosis_group,
+    diagnoses_classification_of_tumor,
+    diagnoses_site_of_resection_or_biopsy
+  ) %>%
+  head(10) %>%
+  kable(digits = 1, caption = "First 10 Analytic Records")
+```
+
+# 4. Cohort Summary
+
+```{r }
+cohort_summary <- analytic_data %>%
+  summarise(
+    cases = n_distinct(case_id),
+    mean_age = mean(age_at_diagnosis_yrs, na.rm = TRUE),
+    median_age = median(age_at_diagnosis_yrs, na.rm = TRUE),
+    min_age = min(age_at_diagnosis_yrs, na.rm = TRUE),
+    max_age = max(age_at_diagnosis_yrs, na.rm = TRUE),
+    female_cases = sum(demographic_gender == "Female", na.rm = TRUE),
+    male_cases = sum(demographic_gender == "Male", na.rm = TRUE)
+  )
+
+kable(cohort_summary, digits = 1, caption = "Overall Cohort Summary")
+```
+
+# 5. Table 1: Characteristics by Diagnosis Group
+
+```{r }
+table1 <- analytic_data %>%
+  group_by(diagnosis_group) %>%
+  summarise(
+    n = n(),
+    mean_age = mean(age_at_diagnosis_yrs, na.rm = TRUE),
+    median_age = median(age_at_diagnosis_yrs, na.rm = TRUE),
+    percent_female = mean(demographic_gender == "Female", na.rm = TRUE) * 100,
+    percent_male = mean(demographic_gender == "Male", na.rm = TRUE) * 100,
+    .groups = "drop"
+  ) %>%
+  arrange(desc(n))
+
+kable(table1, digits = 1, caption = "Cohort Characteristics by Diagnosis Group")
+```
+
+# 6. Diagnosis Distribution
+
+```{r }
+diagnosis_counts <- analytic_data %>%
+  count(diagnoses_primary_diagnosis, sort = TRUE) %>%
+  mutate(percent = n / sum(n) * 100)
+
+kable(head(diagnosis_counts, 15), digits = 1, caption = "Top Primary Diagnoses")
+```
+
+```{r diagnosis-plot, fig.width=9, fig.height=6}
+diagnosis_counts %>%
+  slice_max(n, n = 10) %>%
+  ggplot(aes(x = reorder(diagnoses_primary_diagnosis, n), y = n)) +
+  geom_col() +
+  coord_flip() +
+  labs(
+    title = "Most Common CNS Tumor Diagnoses",
+    x = "Primary Diagnosis",
+    y = "Number of Cases"
+  )
+```
+
+# 7. Age Distribution
+
+```{r age-histogram, fig.width=8, fig.height=5}
+ggplot(analytic_data, aes(x = age_at_diagnosis_yrs)) +
+  geom_histogram(bins = 30) +
+  labs(
+    title = "Age at Diagnosis Distribution",
+    x = "Age at Diagnosis (Years)",
+    y = "Number of Cases"
+  )
+```
+
+```{r age-by-diagnosis, fig.width=9, fig.height=6}
+ggplot(analytic_data, aes(x = reorder(diagnosis_group, age_at_diagnosis_yrs, median),
+                     y = age_at_diagnosis_yrs)) +
+  geom_boxplot() +
+  coord_flip() +
+  labs(
+    title = "Age at Diagnosis by Diagnosis Group",
+    x = "Diagnosis Group",
+    y = "Age at Diagnosis (Years)"
+  )
+```
+
+# 8. Sex Distribution by Diagnosis Group
+
+```{r sex-diagnosis-table}
+sex_by_diagnosis <- analytic_data %>%
+  count(diagnosis_group, demographic_gender) %>%
+  group_by(diagnosis_group) %>%
+  mutate(percent = n / sum(n) * 100) %>%
+  ungroup()
+
+kable(sex_by_diagnosis, digits = 1, caption = "Sex Distribution by Diagnosis Group")
+```
+
+```{r sex-diagnosis-plot, fig.width=9, fig.height=6}
+ggplot(sex_by_diagnosis,
+       aes(x = diagnosis_group, y = percent, fill = demographic_gender)) +
+  geom_col(position = "stack") +
+  coord_flip() +
+  labs(
+    title = "Sex Distribution by Diagnosis Group",
+    x = "Diagnosis Group",
+    y = "Percent",
+    fill = "Sex"
+  )
+```
+
+# 9. Age by Diagnosis Group
+
+This section uses a Kruskal-Wallis test to compare age distributions.
+
+```{r kruskal-test}
+age_test <- kruskal.test(age_at_diagnosis_yrs ~ diagnosis_group, data = analytic_data)
+age_test
+```
+
+# 10. Sex by Diagnosis Group
+
+```{r sex-test}
+sex_table <- table(analytic_data$diagnosis_group, analytic_data$demographic_gender)
+
+sex_test <- chisq.test(sex_table)
+sex_test
+```
+
+# 11. Factors Associated with Glioblastoma Diagnosis
+
+This model evaluates whether age and sex are associated with having glioblastoma compared with other CNS tumor diagnoses.
+
+```{r logistic-model}
+gbm_model <- glm(
+  glioblastoma_flag ~ age_at_diagnosis_yrs + demographic_gender,
+  data = analytic_data,
+  family = binomial()
+)
+
+summary(gbm_model)
+```
+
+```{r logistic-results}
+gbm_results <- tidy(gbm_model, conf.int = TRUE, exponentiate = TRUE) %>%
+  mutate(
+    term = case_when(
+      term == "(Intercept)" ~ "Intercept",
+      term == "age_at_diagnosis_yrs" ~ "Age at diagnosis, years",
+      str_detect(term, "demographic_gender") ~ str_replace(term, "demographic_gender", "Sex: "),
+      TRUE ~ term
+    )
+  )
+
+kable(gbm_results, digits = 3, caption = "Adjusted Odds Ratios for Glioblastoma Diagnosis")
+```
+
+```{r logistic-plot, fig.width=8, fig.height=4}
+gbm_results %>%
+  filter(term != "Intercept") %>%
+  ggplot(aes(x = reorder(term, estimate), y = estimate)) +
+  geom_point() +
+  geom_errorbar(aes(ymin = conf.low, ymax = conf.high), width = 0.2) +
+  geom_hline(yintercept = 1, linetype = "dashed") +
+  coord_flip() +
+  labs(
+    title = "Adjusted Odds Ratios for Glioblastoma Diagnosis",
+    x = "Predictor",
+    y = "Odds Ratio"
+  )
+```
+
+# 12. Interpretation
+
+971 adult central nervous system (CNS) tumor cases were obtained from the National Cancer Institute Genomic Data Commons data. Glioblastoma was the most common diagnosis, accounting for 57.7% of cases, followed by astrocytoma (19.4%) and oligodendroglioma (7.8%). Patients with glioblastoma were older on average and age distributions differed significantly across diagnosis groups based on Kruskal-Wallis test (p < 0.001). The proportion of males and females did not differ significantly across diagnosis groups. In the multivariable logistic regression model, increasing age at diagnosis was associated with higher odds of glioblastoma compared to other CNS tumors (OR = 1.05 per year increase, 95% CI: 1.04–1.06, p < 0.001). Sex was not significantly associated with glioblastoma diagnosis. These findings suggest that age is an important demographic characteristic associated with glioblastoma within this cohort.
+
+
+
+```{r session-info}
+sessionInfo()
+```
+
