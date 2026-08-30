@@ -24,7 +24,7 @@ The analysis explored several related questions:
 
 Multiple environmental and epidemiologic spatial datasets were imported and prepared in R.
 
-The workflow included:
+The workflow included: 
 
 - Importing vector and tabular spatial datasets
 - Creating `sf` spatial objects
