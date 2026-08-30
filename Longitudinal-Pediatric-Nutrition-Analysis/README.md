@@ -62,6 +62,18 @@ The analysis involved repeated observations for individual participants, requiri
 - Model diagnostics
 - Data visualization
 
+## Privacy and Data Availability
+
+This project was conducted using real-world longitudinal pediatric nutrition data. The original research dataset is not publicly available and is not included in this repository.
+
+Code shared in this repository has been cleaned and generalized to remove participant identifiers, local file paths, project-specific identifiers, and potentially sensitive or restricted information. Variable names may also be generalized where appropriate to protect the underlying research data.
+
+The repository is intended to demonstrate the analytical workflow, statistical methods, and programming approaches used in the project without exposing individual-level research data.
+
+## Reproducibility
+
+Because the original research data cannot be publicly distributed, the scripts are provided as demonstrations of the analytical workflow rather than as a fully reproducible copy of the original study analysis.
+
 ## Repository Structure
 
 ```text
