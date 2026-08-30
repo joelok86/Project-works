@@ -8,8 +8,10 @@ library(LDlinkR)
 library(dplyr)
 library(ieugwasr)
 
-# Read GWAS variants file
-gwas_snps <- read.csv("significant_snps_final.csv")
+
+# Load GWAS summary statistics.
+# Data are not included in this public repository.
+gwas_snps <- read.csv("path/to/gwas_summary_statistics.csv")
 
 # Sort variants ordered by chromosome and genomic position
 gwas_snps <- gwas_snps |>
