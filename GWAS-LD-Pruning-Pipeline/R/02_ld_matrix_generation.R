@@ -1,133 +1,59 @@
-# Linkage Disequilibrium Analysis and SNP Clumping
-# ------------------------------------------------
-# This script demonstrates an R workflow for evaluating linkage disequilibrium
-# among GWAS variants and selecting approximately independent SNPs for
-# downstream genetic epidemiology analyses.
+# LD Matrix Generation
+# --------------------
+# This script generates linkage disequilibrium (LD) matrices for GWAS SNPs
+# using LDlinkR. Large SNP sets are processed in smaller batches to account
+# for LDmatrix input-size limitations.
 
 library(LDlinkR)
 library(dplyr)
-library(ieugwasr)
 
-
-# Load GWAS summary statistics.
-# Data are not included in this public repository.
+# Load prepared GWAS variants.
+# Research data are not included in this public repository.
 gwas_snps <- read.csv("path/to/gwas_summary_statistics.csv")
 
-# Sort variants ordered by chromosome and genomic position
+# Sort SNPs by chromosome and genomic position
 gwas_snps <- gwas_snps |>
   arrange(chromosome, position)
 
+# Example: select variants from one chromosome
+chr_snps <- gwas_snps |>
+  filter(chromosome == 1) |>
+  select(SNP, chromosome, position, p_value)
+
 # ------------------------------------------------
-# 1. Linkage disequilibrium matrix
+# LDlinkR matrix generation
 # ------------------------------------------------
 
-# LDlinkR can be used to estimate pairwise linkage disequilibrium
-# among rsIDs. Population, genome build, and API token should be
-# supplied by the user when running the analysis.
+# LDmatrix accepts a limited number of rsIDs per request.
+# For larger chromosome-specific SNP sets, variants can be divided
+# into smaller batches and processed separately.
 
-example_snps <- head(gwas_snps$SNP, 50)
+batch_size <- 500
 
-ld_matrix <- LDmatrix(
-  snps = example_snps,
-  pop = "EUR",
-  r2d = "r2",
-  token = Sys.getenv("LDLINK_TOKEN"),
-  genome_build = "grch37"
+snp_batches <- split(
+  chr_snps$SNP,
+  ceiling(seq_along(chr_snps$SNP) / batch_size)
 )
 
-# ------------------------------------------------
-# 2. Convert LD matrix into SNP-pair format
-# ------------------------------------------------
+# Store LD matrices generated for each batch
+ld_matrices <- vector("list", length(snp_batches))
 
-ld_pairs <- as.data.frame(ld_matrix)
+for (i in seq_along(snp_batches)) {
 
-ld_pairs$SNP_1 <- rownames(ld_pairs)
+  message("Processing batch ", i, " of ", length(snp_batches))
 
-ld_pairs_long <- ld_pairs |>
-  tidyr::pivot_longer(
-    cols = -SNP_1,
-    names_to = "SNP_2",
-    values_to = "r2"
-  ) |>
-  filter(SNP_1 != SNP_2) |>
-  mutate(r2 = as.numeric(r2))
-
-# ------------------------------------------------
-# 3. Identify correlated SNP pairs
-# ------------------------------------------------
-
-ld_threshold <- 0.1
-
-correlated_pairs <- ld_pairs_long |>
-  filter(!is.na(r2), r2 >= ld_threshold)
-
-# ------------------------------------------------
-# 4. Attach GWAS association statistics
-# ------------------------------------------------
-
-correlated_pairs <- correlated_pairs |>
-  left_join(
-    gwas_snps |>
-      select(SNP, p_value),
-    by = c("SNP_1" = "SNP")
-  ) |>
-  rename(p_value_1 = p_value) |>
-  left_join(
-    gwas_snps |>
-      select(SNP, p_value),
-    by = c("SNP_2" = "SNP")
-  ) |>
-  rename(p_value_2 = p_value)
-
-# ------------------------------------------------
-# 5. Select representative SNP from each correlated pair
-# ------------------------------------------------
-
-representative_snps <- correlated_pairs |>
-  mutate(
-    retained_snp = if_else(
-      p_value_1 <= p_value_2,
-      SNP_1,
-      SNP_2
-    ),
-    retained_p_value = pmin(
-      p_value_1,
-      p_value_2,
-      na.rm = TRUE
-    )
-  ) |>
-  select(retained_snp, retained_p_value) |>
-  distinct()
-
-# ------------------------------------------------
-# 6. Alternative LD clumping workflow
-# ------------------------------------------------
-
-# ieugwasr::ld_clump() can also be used to select approximately
-# independent variants based on genomic distance, LD and p-values.
-
-clump_input <- gwas_snps |>
-  transmute(
-    rsid = SNP,
-    pval = p_value
+  ld_matrices[[i]] <- LDmatrix(
+    snps = snp_batches[[i]],
+    pop = "POPULATION",
+    r2d = "r2",
+    token = Sys.getenv("LDLINK_TOKEN"),
+    genome_build = "GENOME_BUILD"
   )
+}
 
-# Example only:
-#
-# clumped_snps <- ld_clump(
-#   dat = clump_input,
-#   clump_kb = 10000,
-#   clump_r2 = 0.1,
-#   clump_p = 5e-8,
-#   pop = "EUR"
-# )
+# Inspect number of LD matrices generated
+length(ld_matrices)
 
-# ------------------------------------------------
-# 7. Export representative variants
-# ------------------------------------------------
-
-write.csv(
-  representative_snps,
-  "representative_snps_example.csv",
-  row.names = FALSE
-)
+# Review dimensions of each matrix
+matrix_dimensions <- lapply(ld_matrices, dim)
+matrix_dimensions
