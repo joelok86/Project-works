@@ -8,8 +8,8 @@ library(readr)
 library(dplyr)
 
 # Import GWAS summary statistics
-# Replace the example file name with the appropriate local file when running.
-gwas_data <- read_table("example_gwas_summary.txt")
+# Research data are not included in this public repository.
+gwas_data <- read_table("path/to/gwas_summary_statistics.txt")
 
 # Standardize key GWAS variables
 gwas_1 <- gwas_data |>
