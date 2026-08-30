@@ -54,7 +54,9 @@ GWAS-LD-Pruning-Pipeline/
 ├── README.md
 └── R/
     ├── 01_prepare_gwas_data.R
-    └── 02_ld_pruning_clumping.R
+    ├── 02_ld_matrix_generation.R
+    ├── 03_ld_pair_filtering.R
+    └── 04_ld_clumping.R
 ```
 
 ## Data Availability
