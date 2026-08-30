@@ -1,51 +1,26 @@
-# GWAS Linkage Disequilibrium and SNP Pruning Pipeline
-
 ## Overview
 
-This project shows an R-based workflow developed for processing genome-wide association study (GWAS) summary statistics and identifying independent genetic variants for genetic epidemiology analyses.
+This project presents an R-based workflow developed during genetic epidemiology research for processing genome-wide association study (GWAS) summary statistics and identifying approximately independent genetic variants for downstream analyses.
 
-The workflow includes data preparation, SNP filtering, chromosome-based processing, linkage disequilibrium (LD) assessment, and LD pruning/clumping.
+The workflow includes preparation and filtering of GWAS summary statistics, chromosome-based organization of variants, linkage disequilibrium (LD) matrix generation, processing of large SNP sets in batches, identification of correlated SNP pairs using r², comparison of association p-values within correlated pairs, and LD-based SNP pruning/clumping.
 
-The original analysis was developed as part of genomic epidemiology research involving genetic variants associated with complex traits. Research datasets are not included in this repository.
+A key computational challenge in the original analysis was processing large numbers of variants within the input limits of LDlinkR. Variants were organized by chromosome and genomic position and processed in smaller batches before LD relationships were evaluated.
 
-## Objectives
-
-The workflow was developed to:
-
-- Import and standardize GWAS summary statistics
-- Filter SNPs based on statistical significance
-- Organize variants by chromosome and genomic position
-- Assess linkage disequilibrium between genetic variants
-- Identify correlated SNP pairs using LD (r²) thresholds
-- Select representative variants based on association strength
-- Perform LD pruning/clumping to generate sets of approximately independent SNPs
-
-## Tools and Technologies
-
-- R
-- LDlinkR
-- ieugwasr
-- bigsnpr
-- snpStats
-- data.table
-- PLINK-compatible workflows
+The repository contains cleaned and organized versions of the analytical code. The original research datasets are not included because they are not publicly shareable.
 
 ## Workflow
 
-1. **GWAS data preparation**  
-   Import and standardize SNP identifiers, effect alleles, alternate alleles, effect sizes, p-values, chromosome numbers, and genomic positions.
+### 1. GWAS Data Preparation
+GWAS summary statistics are imported, standardized, converted to appropriate data types, filtered using association p-values, and organized by chromosome and genomic position.
 
-2. **SNP filtering**  
-   Filter variants according to predefined statistical significance thresholds.
+### 2. LD Matrix Generation
+SNPs are processed using LDlinkR to generate pairwise linkage disequilibrium matrices. Large chromosome-specific SNP sets are divided into smaller batches when necessary to accommodate LDmatrix input limits.
 
-3. **Chromosome-based processing**  
-   Organize SNPs by chromosome and genomic position for efficient LD analysis.
+### 3. LD Pair Filtering and SNP Selection
+LD matrices are transformed into SNP-pair data. Correlated SNP pairs are identified using an r² threshold and linked back to GWAS association statistics. P-values are compared to identify representative variants among correlated SNPs.
 
-4. **Linkage disequilibrium analysis**  
-   Estimate pairwise LD and identify correlated variants using r² thresholds.
-
-5. **SNP selection and clumping**  
-   Compare association statistics among correlated variants and retain representative SNPs for downstream analyses.
+### 4. LD Clumping
+LD-based clumping approaches are explored using genomic analysis tools including ieugwasr and bigsnpr to identify approximately independent variants for downstream analyses.
 
 ## Repository Structure
 
@@ -65,7 +40,7 @@ The original research data are not included because they were used within a rese
 
 The code in this repository is presented as a reproducible demonstration of the analytical workflow.
 
-## Skills Demonstrated
+## Skills
 
 - Genetic epidemiology
 - GWAS summary-statistics processing
