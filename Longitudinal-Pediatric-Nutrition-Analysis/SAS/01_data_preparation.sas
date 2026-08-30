@@ -173,4 +173,4 @@ run;
 proc sort data=work.longitudinal_merged
           out=work.longitudinal_merged_sorted;
     by participant_id followup_month;
-run;
+run; 
