@@ -36,31 +36,29 @@ The analysis involved repeated observations for individual participants, requiri
 - Created coefficient plots with confidence intervals
 - Explored differences in associations across participant characteristics
 
-## Software and Methods
+```markdown
+## Software and Analytical Methods
 
-**SAS**
+### SAS
 - DATA step processing
-- Dataset sorting and merging
 - Variable recoding and transformation
-- PROC MIXED
+- Dataset sorting and merging
+- PROC MIXED for exploratory longitudinal modeling
 
-**R**
-- dplyr
-- tidyr
-- lme4
-- ggplot2
-- lubridate
-- stringr
-- car
+### R
+- `dplyr` and `tidyr` for data manipulation
+- `lubridate` and `stringr` for date and text processing
+- `lme4` for linear mixed-effects models
+- `car` for multicollinearity diagnostics
+- `broom.mixed` for model-result extraction
+- `ggplot2` for longitudinal and model visualizations
 
-**Methods**
-- Longitudinal data management
-- Feature engineering
+### Analytical Methods
+- Longitudinal participant-level data integration
+- Feature engineering for nutrition and household variables
 - Repeated-measures analysis
 - Linear mixed-effects modeling
-- Age-stratified analysis
-- Model diagnostics
-- Data visualization
+- Longitudinal visualization
 
 ## Privacy and Data Availability
 
@@ -73,6 +71,8 @@ The repository is intended to demonstrate the analytical workflow, and programmi
 ## Reproducibility
 
 Because the original research data cannot be publicly distributed, the scripts are provided as demonstrations of the analytical workflow rather than as a fully reproducible copy of the original study analysis.
+
+## Repository Structure
 
 ## Repository Structure
 
