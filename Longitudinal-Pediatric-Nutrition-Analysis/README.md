@@ -68,7 +68,7 @@ This project was conducted using real-world longitudinal pediatric nutrition dat
 
 Code shared in this repository has been cleaned and generalized to remove participant identifiers, local file paths, project-specific identifiers, and potentially sensitive or restricted information. Variable names may also be generalized where appropriate to protect the underlying research data.
 
-The repository is intended to demonstrate the analytical workflow, statistical methods, and programming approaches used in the project without exposing individual-level research data.
+The repository is intended to demonstrate the analytical workflow, and programming approaches used in the project without exposing individual-level research data.
 
 ## Reproducibility
 
